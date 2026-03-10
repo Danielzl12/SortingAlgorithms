@@ -1,0 +1,187 @@
+@startuml
+
+title Diagrama de Clases - Algoritmos de Ordenamiento
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #F8F9FF
+skinparam class {
+    BackgroundColor #EEF2FF
+    BorderColor #3050A0
+    HeaderBackgroundColor #2050A0
+    HeaderFontColor #FFFFFF
+    FontSize 13
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #6080C0
+    FontColor #2040A0
+    FontStyle bold
+}
+skinparam arrow {
+    Color #3050A0
+    FontSize 11
+}
+
+' =====================
+' PACKAGE: algoritmos
+' =====================
+package "sortingalgorithms.algoritmos" {
+
+    interface AlgoritmoOrdenamiento {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+    }
+
+    class BurbujaSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+    }
+
+    class InsercionSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+    }
+
+    class SeleccionSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+    }
+
+    class ShellSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+    }
+
+    class HeapSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+        - hundirPadre(arr : int[], n : int, i : int) : void
+    }
+
+    class QuickSort {
+        + ordenar(arr : int[]) : void
+        + getNombre() : String
+        - quickSort(arr : int[], inicio : int, fin : int) : void
+        - partir(arr : int[], inicio : int, fin : int) : int
+    }
+
+    BurbujaSort   ..|> AlgoritmoOrdenamiento
+    InsercionSort ..|> AlgoritmoOrdenamiento
+    SeleccionSort ..|> AlgoritmoOrdenamiento
+    ShellSort     ..|> AlgoritmoOrdenamiento
+    HeapSort      ..|> AlgoritmoOrdenamiento
+    QuickSort     ..|> AlgoritmoOrdenamiento
+}
+
+' =====================
+' PACKAGE: util
+' =====================
+package "sortingalgorithms.util" {
+
+    class MedidorTiempo {
+        - inicioMs : long
+        - inicioNs : long
+        - tiempoMs : long
+        - tiempoNs : long
+        + iniciar() : void
+        + detener() : void
+        + getTiempoMs() : long
+        + getTiempoNs() : long
+        + getTiempoMsTexto() : String
+        + getTiempoNsTexto() : String
+    }
+
+    class GeneradorArreglo {
+        + {static} generarAleatorio(tamano : int) : int[]
+        + {static} parsearDesdeTexto(texto : String) : int[]
+        + {static} arregloATexto(arr : int[], limite : int) : String
+    }
+}
+
+' =====================
+' PACKAGE: modelo
+' =====================
+package "sortingalgorithms.modelo" {
+
+    class ResultadoOrdenamiento {
+        - nombreAlgoritmo : String
+        - tiempoMs : long
+        - tiempoNs : long
+        - arregloOrdenado : int[]
+        + getNombreAlgoritmo() : String
+        + getTiempoMs() : long
+        + getTiempoNs() : long
+        + getArregloOrdenado() : int[]
+        + getTiempoMsTexto() : String
+        + getTiempoNsTexto() : String
+        + getVistaPrevia() : String
+    }
+}
+
+' =====================
+' PACKAGE: gui
+' =====================
+package "sortingalgorithms.gui" {
+
+    class SortingGUI {
+        - controlador : ControladorOrdenamiento
+        - arregloOriginal : int[]
+        - checkboxes : List<JCheckBox>
+        + SortingGUI()
+        - construirInterfaz() : void
+        - construirPanelIzquierdo() : JPanel
+        - construirPanelDerecho() : JPanel
+        - generarArreglo() : void
+        - ordenarYMedir() : void
+        - limpiarTodo() : void
+        - crearBoton(texto : String, color : Color) : JButton
+        - mostrarError(mensaje : String) : void
+    }
+}
+
+' =====================
+' PACKAGE: raiz
+' =====================
+package "sortingalgorithms" {
+
+    class ControladorOrdenamiento {
+        - algoritmos : List<AlgoritmoOrdenamiento>
+        + ControladorOrdenamiento()
+        + getAlgoritmos() : List<AlgoritmoOrdenamiento>
+        + ejecutar(algoritmo : AlgoritmoOrdenamiento, arregloOriginal : int[]) : ResultadoOrdenamiento
+    }
+
+    class Main {
+        + {static} main(args : String[]) : void
+    }
+}
+
+' =====================
+' RELACIONES
+' =====================
+
+' Main arranca la GUI
+Main ..> SortingGUI : <<crea>>
+
+' La GUI usa el controlador
+SortingGUI --> ControladorOrdenamiento : usa
+
+' La GUI usa el generador para crear arreglos
+SortingGUI ..> GeneradorArreglo : usa
+
+' El controlador conoce los algoritmos a traves de la interfaz
+ControladorOrdenamiento o--> AlgoritmoOrdenamiento : contiene lista de
+
+' El controlador usa el medidor de tiempo
+ControladorOrdenamiento ..> MedidorTiempo : usa
+
+' El controlador devuelve resultados
+ControladorOrdenamiento ..> ResultadoOrdenamiento : <<crea>>
+
+' El resultado usa el generador para mostrar el arreglo
+ResultadoOrdenamiento ..> GeneradorArreglo : usa
+
+' La GUI muestra los resultados
+SortingGUI ..> ResultadoOrdenamiento : muestra
+
+@enduml
